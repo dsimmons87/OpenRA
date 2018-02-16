@@ -87,6 +87,7 @@ namespace OpenRA.Mods.Common.Traits
 
 		public void ResolveOrder(Actor self, Order order)
 		{
+
 			if (order.OrderString == "Repair")
 			{
 				if (!CanRepairAt(order.TargetActor) || (!CanRepair() && !CanRearm()))
@@ -97,33 +98,61 @@ namespace OpenRA.Mods.Common.Traits
 
 				self.CancelActivity();
 				self.QueueActivity(new WaitForTransport(self, ActivityUtils.SequenceActivities(new MoveAdjacentTo(self, target),
-					new CallFunc(() => AfterReachActivities(self, order, movement)))));
+					new CallFunc(() => AfterReachActivities(self, order.TargetActor, movement)))));
 
-				TryCallTransport(self, target, new CallFunc(() => AfterReachActivities(self, order, movement)));
+				TryCallTransport(self, target, new CallFunc(() => AfterReachActivities(self, order.TargetActor, movement)));
+			}
+
+			if (order.OrderString == "RepairAtClosest")
+			{
+				if (CanRepair())
+				{
+					Actor RepairBuilding = FindRepairBuilding(self);
+					if (RepairBuilding != null && CanRepairAt(RepairBuilding) && (self.Info.HasTraitInfo<MobileInfo>() || self.Info.HasTraitInfo<AircraftInfo>()))
+					{
+						Target target = Target.FromActor(RepairBuilding);
+						self.SetTargetLine(target, Color.Green);
+						self.CancelActivity();
+						if (self.Info.HasTraitInfo<MobileInfo>())
+						{
+							self.QueueActivity(new WaitForTransport(self, ActivityUtils.SequenceActivities(new MoveAdjacentTo(self, target),
+								new CallFunc(() => AfterReachActivities(self, RepairBuilding, movement)))));
+						}
+						else
+						{
+							//self.QueueActivity(new HeliFly(self, target, new WDist(5), new WDist(5)));
+							//self.QueueActivity(new HeliLand(self, true));
+							//self.QueueActivity(new ResupplyAircraft(self));
+							self.QueueActivity(new HeliReturnToBase(self, false, RepairBuilding, true));
+
+							// TODO do a new activity instead because this just doesn't work
+						}
+					}
+				}
 			}
 		}
 
-		void AfterReachActivities(Actor self, Order order, IMove movement)
+		void AfterReachActivities(Actor self, Actor TargetActor, IMove movement)
 		{
-			if (!order.TargetActor.IsInWorld || order.TargetActor.IsDead || order.TargetActor.TraitsImplementing<RepairsUnits>().All(r => r.IsTraitDisabled))
+			if (!TargetActor.IsInWorld || TargetActor.IsDead || TargetActor.TraitsImplementing<RepairsUnits>().All(r => r.IsTraitDisabled))
 				return;
 
 			// TODO: This is hacky, but almost every single component affected
 			// will need to be rewritten anyway, so this is OK for now.
-			self.QueueActivity(movement.MoveTo(self.World.Map.CellContaining(order.TargetActor.CenterPosition), order.TargetActor));
-			if (CanRearmAt(order.TargetActor) && CanRearm())
+			self.QueueActivity(movement.MoveTo(self.World.Map.CellContaining(TargetActor.CenterPosition), TargetActor));
+			if (CanRearmAt(TargetActor) && CanRearm())
 				self.QueueActivity(new Rearm(self));
 
 			// Add a CloseEnough range of 512 to ensure we're at the host actor
-			self.QueueActivity(new Repair(self, order.TargetActor, new WDist(512)));
+			self.QueueActivity(new Repair(self, TargetActor, new WDist(512)));
 
-			var rp = order.TargetActor.TraitOrDefault<RallyPoint>();
+			var rp = TargetActor.TraitOrDefault<RallyPoint>();
 			if (rp != null)
 			{
 				self.QueueActivity(new CallFunc(() =>
 				{
 					self.SetTargetLine(Target.FromCell(self.World, rp.Location), Color.Green);
-					self.QueueActivity(movement.MoveTo(rp.Location, order.TargetActor));
+					self.QueueActivity(movement.MoveTo(rp.Location, TargetActor));
 				}));
 			}
 		}

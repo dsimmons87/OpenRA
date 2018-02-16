@@ -305,7 +305,7 @@ Container@PLAYER_WIDGETS:
 			X: 5
 			Y: WINDOW_BOTTOM - HEIGHT - 5
 			Background: panel-black
-			Width: 276
+			Width: 310
 			Height: 36
 			Children:
 				LogicKeyListener@MODIFIER_OVERRIDES:
@@ -414,8 +414,26 @@ Container@PLAYER_WIDGETS:
 							Y: 5
 							ImageCollection: command-icons
 							ImageName: scatter
-				Button@STOP:
+				Button@REPAIRUNIT:
 					X: 207
+					Y: 1
+					Width: 34
+					Height: 34
+					Background: command-button
+					Key: RepairUnit
+					DisableKeyRepeat: true
+					DisableKeySound: true
+					TooltipText: Repair
+					TooltipDesc: Selected units will stop their current activity\nand return for repair.\n\nActs immediately on selected units.
+					TooltipContainer: TOOLTIP_CONTAINER
+					Children:
+						Image@ICON:
+							X: 5
+							Y: 5
+							ImageCollection: command-icons
+							ImageName: repair
+				Button@STOP:
+					X: 241
 					Y: 1
 					Width: 34
 					Height: 34
@@ -433,7 +451,7 @@ Container@PLAYER_WIDGETS:
 							ImageCollection: command-icons
 							ImageName: stop
 				Button@QUEUE_ORDERS:
-					X: 241
+					X: 275
 					Y: 1
 					Width: 34
 					Height: 34
@@ -451,7 +469,7 @@ Container@PLAYER_WIDGETS:
 							ImageName: queue-orders
 		Background@STANCE_BAR:
 			Logic: StanceSelectorLogic
-			X: 280
+			X: 314
 			Y: WINDOW_BOTTOM - HEIGHT - 5
 			Background: panel-black
 			Width: 138

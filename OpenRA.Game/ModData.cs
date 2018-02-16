@@ -92,6 +92,8 @@ namespace OpenRA
 
 			Hotkeys = new HotkeyManager(ModFiles, Game.Settings.Keys, Manifest);
 
+			Console.Write(Hotkeys);
+
 			defaultRules = Exts.Lazy(() => Ruleset.LoadDefaults(this));
 			defaultTileSets = Exts.Lazy(() =>
 			{

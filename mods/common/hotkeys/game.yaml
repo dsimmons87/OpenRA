@@ -74,6 +74,10 @@ Guard: D
 	Description: Guard
 	Types: Unit
 
+RepairUnit: G
+	Description: Repair
+	Types: Unit
+
 StanceHoldFire: F Alt
 	Description: Hold fire
 	Types: Stance

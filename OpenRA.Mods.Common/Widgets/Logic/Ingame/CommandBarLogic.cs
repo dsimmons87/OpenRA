@@ -32,11 +32,13 @@ namespace OpenRA.Mods.Common.Widgets
 		bool forceAttackDisabled = true;
 		bool guardDisabled = true;
 		bool scatterDisabled = true;
+		bool repairDisabled = true;
 		bool stopDisabled = true;
 		bool waypointModeDisabled = true;
 
 		int deployHighlighted;
 		int scatterHighlighted;
+		int repairHighlighted;
 		int stopHighlighted;
 
 		TraitPair<IIssueDeployOrder>[] selectedDeploys = { };
@@ -150,6 +152,24 @@ namespace OpenRA.Mods.Common.Widgets
 				scatterButton.OnKeyPress = ki => { scatterHighlighted = 2; scatterButton.OnClick(); };
 			}
 
+			var repairButton = widget.GetOrNull<ButtonWidget>("REPAIRUNIT");
+			if (repairButton != null)
+			{
+				BindButtonIcon(repairButton);
+
+				repairButton.IsDisabled = () => { UpdateStateIfNecessary(); return repairDisabled; };
+				repairButton.IsHighlighted = () => repairHighlighted > 0;
+				repairButton.OnClick = () =>
+				{
+					if (highlightOnButtonPress)
+						repairHighlighted = 2;
+					
+					PerformKeyboardOrderOnSelection(a => new Order("RepairAtClosest", a, false));
+				};
+
+				repairButton.OnKeyPress = ki => { repairHighlighted = 2; repairButton.OnClick(); };
+			}
+
 			var deployButton = widget.GetOrNull<ButtonWidget>("DEPLOY");
 			if (deployButton != null)
 			{
@@ -227,6 +247,9 @@ namespace OpenRA.Mods.Common.Widgets
 
 			if (scatterHighlighted > 0)
 				scatterHighlighted--;
+			
+			if (repairHighlighted > 0)
+				repairHighlighted--;
 
 			if (stopHighlighted > 0)
 				stopHighlighted--;
@@ -275,6 +298,7 @@ namespace OpenRA.Mods.Common.Widgets
 			forceMoveDisabled = !selectedActors.Any(a => a.Info.HasTraitInfo<MobileInfo>() || a.Info.HasTraitInfo<AircraftInfo>());
 			forceAttackDisabled = !selectedActors.Any(a => a.Info.HasTraitInfo<AttackBaseInfo>());
 			scatterDisabled = !selectedActors.Any(a => a.Info.HasTraitInfo<MobileInfo>());
+			repairDisabled = !selectedActors.Any(a => a.Info.HasTraitInfo<RepairableInfo>());
 
 			selectedDeploys = selectedActors
 				.SelectMany(a => a.TraitsImplementing<IIssueDeployOrder>()

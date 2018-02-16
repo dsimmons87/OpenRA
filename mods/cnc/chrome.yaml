@@ -551,6 +551,8 @@ command-icons: chrome.png
 	deploy-disabled: 416,152,24,24
 	scatter: 440,128,24,24
 	scatter-disabled: 440,152,24,24
+	repair: 256,207,24,24
+	repair-disabled: 256,231,24,24
 	stop: 464,128,24,24
 	stop-disabled: 464,152,24,24
 	queue-orders: 488,128,24,24

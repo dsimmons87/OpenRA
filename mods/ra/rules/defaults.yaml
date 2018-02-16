@@ -556,6 +556,8 @@
 	Explodes:
 		Weapon: UnitExplode
 		RequiresCondition: !airborne
+	Repairable:
+		RepairBuildings: fix
 
 ^Plane:
 	Inherits: ^NeutralPlane

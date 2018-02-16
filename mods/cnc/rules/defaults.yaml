@@ -228,6 +228,7 @@
 	Targetable:
 		TargetTypes: Ground, Vehicle
 	Repairable:
+		RepairBuildings: fix
 	Passenger:
 		CargoType: Vehicle
 	ActorLostNotification:
@@ -301,6 +302,8 @@
 	DrawLineToTarget:
 	Guard:
 	Guardable:
+	Repairable:
+		RepairBuildings: hpad
 	Tooltip:
 		GenericName: Helicopter
 	WithFacingSpriteBody:
